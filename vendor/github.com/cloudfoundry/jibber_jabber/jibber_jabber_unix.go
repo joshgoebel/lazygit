@@ -1,4 +1,4 @@
-// +build darwin freebsd linux netbsd openbsd
+// +build haiku darwin freebsd linux netbsd openbsd
 
 package jibber_jabber
 

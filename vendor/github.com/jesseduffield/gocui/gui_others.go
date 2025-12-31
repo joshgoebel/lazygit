@@ -12,7 +12,10 @@ import (
 	"os/signal"
 	"syscall"
 	"unsafe"
+	//"fmt"
+	//"time"
 
+	"golang.org/x/sys/unix"
 	"github.com/go-errors/errors"
 )
 
@@ -37,8 +40,12 @@ func (g *Gui) getTermWindowSize() (int, int, error) {
 	signal.Notify(signalCh, syscall.SIGWINCH, syscall.SIGINT)
 
 	for {
-		_, _, _ = syscall.Syscall(syscall.SYS_IOCTL,
-			out.Fd(), uintptr(syscall.TIOCGWINSZ), uintptr(unsafe.Pointer(&sz)))
+		_, _, err = syscall.Syscall(syscall.SYS_IOCTL,
+			out.Fd(), uintptr(unix.TIOCGWINSZ), uintptr(unsafe.Pointer(&sz)))
+
+    		//if err != nil {
+            	//	return 0, 0, errors.New(fmt.Errorf("error was non zero %d",err))
+        	//}
 
 		// check terminal window size
 		termw, termh = int(sz.cols), int(sz.rows)
@@ -57,5 +64,6 @@ func (g *Gui) getTermWindowSize() (int, int, error) {
 				return 0, 0, errors.New("stop to get term window size")
 			}
 		}
+		 //time.Sleep(10 * time.Millisecond)
 	}
 }

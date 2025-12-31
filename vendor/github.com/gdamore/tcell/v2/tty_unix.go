@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build aix || darwin || dragonfly || freebsd || linux || netbsd || openbsd || solaris || zos
-// +build aix darwin dragonfly freebsd linux netbsd openbsd solaris zos
+//go:build haiku || aix || darwin || dragonfly || freebsd || linux || netbsd || openbsd || solaris || zos
+// +build haiku aix darwin dragonfly freebsd linux netbsd openbsd solaris zos
 
 package tcell
 
@@ -75,7 +75,7 @@ func (tty *devTty) Start() error {
 	}
 
 	if !term.IsTerminal(tty.fd) {
-		return errors.New("device is not a terminal")
+		return errors.New("device is NOT a terminal")
 	}
 
 	_ = tty.f.SetReadDeadline(time.Time{})
@@ -180,7 +180,7 @@ func NewDevTtyFromDev(dev string) (Tty, error) {
 	tty.fd = int(tty.of.Fd())
 	if !term.IsTerminal(tty.fd) {
 		_ = tty.f.Close()
-		return nil, errors.New("not a terminal")
+		return nil, errors.New("NOT a terminal")
 	}
 	if tty.saved, err = term.GetState(tty.fd); err != nil {
 		_ = tty.f.Close()

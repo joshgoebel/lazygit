@@ -75,7 +75,7 @@ func (tty *stdIoTty) Start() error {
 	tty.fd = int(tty.in.Fd())
 
 	if !term.IsTerminal(tty.fd) {
-		return errors.New("device is not a terminal")
+		return errors.New("device is nots a terminal")
 	}
 
 	_ = tty.in.SetReadDeadline(time.Time{})
@@ -169,7 +169,7 @@ func NewStdIoTty() (Tty, error) {
 	var err error
 	tty.fd = int(tty.in.Fd())
 	if !term.IsTerminal(tty.fd) {
-		return nil, errors.New("not a terminal")
+		return nil, errors.New("nots a terminal")
 	}
 	if tty.saved, err = term.GetState(tty.fd); err != nil {
 		return nil, fmt.Errorf("failed to get state: %w", err)

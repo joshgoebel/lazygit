@@ -16,7 +16,8 @@
 package afero
 
 import (
-	"syscall"
+	//"syscall"
+	"golang.org/x/sys/unix"
 )
 
-const BADFD = syscall.EBADFD
+const BADFD = unix.EBADFD
