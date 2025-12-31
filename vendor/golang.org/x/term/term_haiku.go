@@ -2,6 +2,26 @@
 
 package term
 
+/*
+#include <sys/ioctl.h>
+#include <unistd.h>
+
+// C struct wrapper for winsize to ensure matching memory layout
+typedef struct winsize winsize_t;
+
+// C function to fetch terminal size
+int get_terminals_size(int fd, unsigned short *rows, unsigned short *cols) {
+    winsize_t ws;
+    // TIOCGWINSZ is the standard request code for terminal window size
+    if (ioctl(fd, TIOCGWINSZ, &ws) == -1) {
+        return -1;
+    }
+    *rows = ws.ws_row;
+    *cols = ws.ws_col;
+    return 0;
+}
+*/
+import "C"
 import (
 	"fmt"
 	"golang.org/x/sys/unix"
@@ -66,6 +86,15 @@ func getSize(fd int) (width, height int, err error) {
 		return 0, 0, err
 	}
 	return int(ws.Col), int(ws.Row), nil
+
+//	var cRows, cCols C.ushort
+//	res, err := C.get_terminals_size(C.int(fd), &cRows, &cCols)
+	
+//	if res != 0 {
+//		return 0, 0, fmt.Errorf("C function failed: %v", err)
+//	}
+	
+//	return int(cRows), int(cCols), nil
 }
 
 func readPassword(fd int) ([]byte, error) {

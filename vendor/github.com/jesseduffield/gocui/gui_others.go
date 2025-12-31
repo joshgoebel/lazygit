@@ -11,22 +11,23 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"unsafe"
-	//"fmt"
-	//"time"
+	//"unsafe"
+	"fmt"
+	"time"
 
-	"golang.org/x/sys/unix"
+	//"golang.org/x/sys/unix"
+	"golang.org/x/term"
 	"github.com/go-errors/errors"
 )
 
 // getTermWindowSize is get terminal window size on linux or unix.
 // When gocui run inside the docker contaienr need to check and get the window size.
 func (g *Gui) getTermWindowSize() (int, int, error) {
-	var sz struct {
-		rows uint16
-		cols uint16
-		_    [2]uint16 // to match underlying syscall; see https://github.com/awesome-gocui/gocui/issues/33
-	}
+	//var sz struct {
+	//	rows uint16
+	//	cols uint16
+	//	_    [2]uint16 // to match underlying syscall; see https://github.com/awesome-gocui/gocui/issues/33
+	//}
 
 	var termw, termh int
 
@@ -36,19 +37,29 @@ func (g *Gui) getTermWindowSize() (int, int, error) {
 	}
 	defer out.Close()
 
+	termw, termh, err = term.GetSize(int(out.Fd()))
+	fmt.Printf("Terminal Size: %d columns x %d rows\n", termw, termh)
+
 	signalCh := make(chan os.Signal, 1)
 	signal.Notify(signalCh, syscall.SIGWINCH, syscall.SIGINT)
 
 	for {
-		_, _, err = syscall.Syscall(syscall.SYS_IOCTL,
-			out.Fd(), uintptr(unix.TIOCGWINSZ), uintptr(unsafe.Pointer(&sz)))
+		//_, _, err = syscall.Syscall(syscall.SYS_IOCTL,
+		//	out.Fd(), uintptr(unix.TIOCGWINSZ), uintptr(unsafe.Pointer(&sz)))
 
     		//if err != nil {
             	//	return 0, 0, errors.New(fmt.Errorf("error was non zero %d",err))
         	//}
 
 		// check terminal window size
-		termw, termh = int(sz.cols), int(sz.rows)
+		//termw, termh = int(sz.cols), int(sz.rows)
+		termw, termh, err = term.GetSize(int(out.Fd()))
+
+    		if err != nil {
+            		return 0, 0, errors.New(fmt.Errorf("error was non zero %d",err))
+        	}
+
+		fmt.Printf("Terminal Size: %d columns x %d rows\n", termw, termh)
 		if termw > 0 && termh > 0 {
 			return termw, termh, nil
 		}
@@ -64,6 +75,6 @@ func (g *Gui) getTermWindowSize() (int, int, error) {
 				return 0, 0, errors.New("stop to get term window size")
 			}
 		}
-		 //time.Sleep(10 * time.Millisecond)
+		 time.Sleep(100 * time.Millisecond)
 	}
 }
